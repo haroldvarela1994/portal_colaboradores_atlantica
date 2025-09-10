@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Gestión de Usuarios{% endblock %}
+
+{% block bienvenida %}
+  <h1><i class="fas fa-users-cog"></i> Gestión de Usuarios</h1>
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block contenido %}
+<div class="usuarios-wrapper">
+  <div class="header-actions">
+    <div class="create-user-button">
+      <button class="quick-button" onclick="window.location.href='{{ url_for('crear_usuario') }}'">👤 Crear Usuario</button>
+    </div>
+    
+    <!-- Formulario de Filtros -->
+    <div class="filtros-container">
+      <form method="GET" action="{{ url_for('gestion_usuarios') }}" class="filtros-form">
+        
+        <!-- Búsqueda general -->
+        <div class="filtro-group">
+          <input type="text" name="search" placeholder="Buscar por nombre, email o ID..." 
+                 value="{{ current_filters.search }}" class="filtro-input">
+        </div>
+        
+        <!-- Filtro por Estado -->
+        <div class="filtro-group">
+          <select name="estado" class="filtro-select">
+            <option value="">Todos los estados</option>
+            {% for estado in estados %}
+            <option value="{{ estado.estado }}" {% if current_filters.estado == estado.estado %}selected{% endif %}>
+              {{ estado.estado }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <!-- Filtro por Rol -->
+        <div class="filtro-group">
+          <select name="rol" class="filtro-select">
+            <option value="">Todos los roles</option>
+            {% for rol in roles %}
+            <option value="{{ rol.rol }}" {% if current_filters.rol == rol.rol %}selected{% endif %}>
+              {{ rol.rol }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <!-- Botones -->
+        <div class="filtro-group">
+          <button type="submit" class="btn-filtrar">🔍 Filtrar</button>
+          <a href="{{ url_for('gestion_usuarios') }}" class="btn-limpiar">🔄 Limpiar</a>
+        </div>
+        
+      </form>
+    </div>
+  </div>
+
+  <!-- Mensajes Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <section class="card full-span">
+    <div class="table-responsive">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Identificación</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Registro</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if usuarios.count() > 0 %}
+            {% for usuario in usuarios %}
+            <tr>
+              <td>{{ usuario.id_usuario }}</td>
+              <td>{{ usuario.numero_id }}</td>
+              <td>{{ usuario.nombres_usuario }}</td>
+              <td>{{ usuario.apellidos_usuario }}</td>
+              <td>{{ usuario.email }}</td>
+              <td>{{ usuario.telefono if usuario.telefono else 'N/A' }}</td>
+              <td>{{ usuario.rol.rol if usuario.rol else 'Sin asignar' }}</td>
+              <td>
+                <span class="estado-badge estado-{{ usuario.estado.estado.lower() if usuario.estado else 'inactivo' }}">
+                  {{ usuario.estado.estado if usuario.estado else 'Inactivo' }}
+                </span>
+              </td>
+              <td>{{ usuario.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+              <td class="acciones">
+                <a href="{{ url_for('editar_usuario', user_id=usuario.id_usuario) }}" class="btn-editar">✏️ Editar</a>
+                
+                <form action="{{ url_for('cambiar_estado_usuario', user_id=usuario.id_usuario) }}" method="POST" style="display:inline;">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn-estado {% if usuario.estado.estado == 'Activo' %}btn-desactivar{% else %}btn-activar{% endif %}" 
+                          onclick="return confirm('¿Estás seguro de {% if usuario.estado.estado == 'Activo' %}desactivar{% else %}activar{% endif %} a {{ usuario.nombres_usuario }}?')">
+                    {% if usuario.estado.estado == 'Activo' %}❎ Desactivar{% else %}✅ Activar{% endif %}
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="11" class="no-results">
+                <div class="no-results-content">
+                  <i class="fas fa-search"></i>
+                  <h3>No se encontraron usuarios</h3>
+                  <p>Intenta con otros criterios de búsqueda</p>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <div class="resultados-info">
+    <p>Mostrando {{ usuarios.count() }} usuario(s)</p>
+  </div>
+</div>
+{% endblock %}

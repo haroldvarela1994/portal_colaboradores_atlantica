@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block título %}Crear Nueva Noticia{% endblock %}
+
+{% block bienvenida %}
+  <h1><i class="fas fa-newspaper"></i> Crear Nueva Noticia</h1>
+{% endblock %}
+
+{% block contenido %}
+<section class="card full-span">
+  <!-- Mensajes Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Formulario de creación de noticia -->
+  <form class="form-noticia" action="{{ url_for('crear_noticia') }}" method="post" enctype="multipart/form-data">
+    <!-- TOKEN CSRF (FALTABA ESTO) -->
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label for="titulo">Título de la Noticia*</label>
+        <input type="text" id="titulo" name="titulo" required>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="contexto">Contenido*</label>
+        <textarea id="contexto" name="contexto" rows="6" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="imagen">Imagen de la Noticia</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*">
+        <small>Formatos permitidos: PNG, JPG, JPEG, GIF</small>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="quick-button">📰 Publicar Noticia</button>
+      <button href="{{ url_for('ver_noticias') }}" class="quick-button secondary">❌ Cancelar</button>
+    </div>
+
+    <small class="form-note">* Campos obligatorios</small>
+  </form>
+</section>
+{% endblock %}

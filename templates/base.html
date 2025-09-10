@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% block head %}
+  <meta charset="UTF-8">
+  <title>{% block titulo %}Portal Colaboradores{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  {% endblock %}
+</head>
+<body class="dashboard-body">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="{{ url_for('static', filename='images/LOGO ATLANTICA -01.png')}}" alt="Logo de Atlantica" class="logo">
+      <h2>Portal de Colaboradores</h2>
+    </div>
+    <nav class="sidebar-menu">
+      <ul>
+        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Inicio</a></li>
+          {% if current_user.rol.rol == 'Administrador' or current_user.rol.rol == 'Gerente General' %}
+            <li><a href="{{ url_for('gestion_usuarios') }}"><i class="fas fa-users-cog"></i> Gestión de Usuarios</a></li>
+          {% endif %}
+        <li><a href="{{ url_for('ver_noticias') }}"><i class="fas fa-newspaper"></i> Noticias Corporativas</a></li>
+        <li><a href="#"><i class="fas fa-calendar-check"></i> Solicitudes</a></li>
+        <li><a href="#"><i class="fas fa-file-invoice-dollar"></i> Nómina</a></li>
+        <li><a href="#"><i class="fas fa-user-shield"></i> Disciplinarios</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-bar">
+      <button class="toggle-sidebar" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div>
+        {% block bienvenida %}
+        <h1>¡Hola, usuario!</h1>
+        <p>Bienvenido a tu portal de empleados. Aquí puedes gestionar todos tus asuntos laborales.</p>
+        {% endblock %}
+      </div>
+      <div class="usuario-menu">
+        <div class="usuario-avatar" onclick="toggleMenu()">{{ current_user.nombres_usuario[0] if current_user.is_authenticated else 'U' }}</div> {# Añadido para mostrar inicial del usuario #}
+        <div class="user-dropdown" id="userDropdown">
+          <ul>
+            <li><a href="#">👤 Mi Perfil</a></li>
+            <li><a href="#">🔒 Cambiar Contraseña</a></li>
+            <li><a href="/logout">🚪 Cerrar Sesión</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      {% block contenido %}{% endblock %}
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

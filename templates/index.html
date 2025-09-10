@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio - Portal Colaboradores{% endblock %}
+
+{% block bienvenida %}
+<h1>¡Bienvenido, usuario!</h1>
+<p>Bienvenido a tu portal de colaboradores</p>
+{% endblock %}
+
+{% block contenido %}
+<section class="card">
+  <h3>⚡ Acciones Rápidas</h3>
+  <button class="quick-button">📄 Solicitar Permiso</button>
+  <button class="quick-button">💰 Ver Nómina</button>
+  <button class="quick-button">👤 Actualizar Perfil</button>
+</section>
+
+  <section class="card full-span">
+    <h3>📰 Noticias Corporativas</h3>
+    <div class="noticias-wrapper">
+      {% if noticias %}
+        {% for noticia in noticias %}
+          <div class="noticia">
+            <strong>{{ noticia.titulo }}</strong>
+            <p>{{ noticia.contexto }}</p>
+            <small>
+              📅 {{ noticia.fecha_noticia.strftime('%d de %B, %Y') }}
+              — ✍ {{ noticia.autor.nombres_usuario }}
+            </small>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No hay noticias disponibles.</p>
+      {% endif %}  <!-- Cierre añadido -->
+    </div>
+  </section>
+
+<section class="card">
+  <h3>📅 Abril 2024</h3>
+  <div class="calendar-placeholder">[ Calendario aquí ]</div>
+</section>
+
+<section class="card">
+  <h3>📊 Actividad Semanal</h3>
+  <div class="chart-placeholder">[ Gráfico de barras aquí ]</div>
+  <small>Horas de actividad por día</small>
+</section>
+
+<section class="card">
+  <h3>📌 Próximos Eventos</h3>
+  <ul class="event-list">
+    <li>
+      <strong>Reunión de Equipo</strong><br>
+      <small>25 de Abril - 10:00 AM</small>
+    </li>
+    <li>
+      <strong>Capacitación Virtual</strong><br>
+      <small>28 de Abril - 2:00 PM</small>
+    </li>
+    <li>
+      <strong>Evaluación de Desempeño</strong><br>
+      <small>30 de Abril - 9:00 AM</small>
+    </li>
+  </ul>
+</section>
+{% endblock %}

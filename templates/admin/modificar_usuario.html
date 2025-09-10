@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block título %}Modificar Usuario{% endblock %}
+
+{% block bienvenida %}
+  <h1><i class="fas fa-user-edit"></i> Modificar Usuario</h1>
+{% endblock %}
+
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+{% endblock %}
+
+{% block contenido %}
+<section class="card full-span">
+  <!-- Mensajes Flash -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Formulario de modificación -->
+  <form class="form-usuario" action="{{ url_for('editar_usuario', user_id=usuario.id_usuario) }}" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Campos obligatorios -->
+    <div class="form-grid">
+      <div class="form-group">
+        <label for="numero_id">Número de Cédula*</label>
+        <input type="text" id="numero_id" name="numero_id" value="{{ usuario.numero_id }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="nombres_usuario">Nombres*</label>
+        <input type="text" id="nombres_usuario" name="nombres_usuario" value="{{ usuario.nombres_usuario }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="apellidos_usuario">Apellidos*</label>
+        <input type="text" id="apellidos_usuario" name="apellidos_usuario" value="{{ usuario.apellidos_usuario }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email*</label>
+        <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="clave">Contraseña (dejar en blanco para no cambiar)</label>
+        <input type="password" id="clave" name="clave" minlength="6">
+      </div>
+
+      <div class="form-group">
+        <label for="rol_id">Rol*</label>
+        <select id="rol_id" name="rol_id" required>
+          {% for rol in roles %}
+            <option value="{{ rol.id_rol }}" {% if usuario.rol.id_rol == rol.id_rol %}selected{% endif %}>{{ rol.rol }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="estado_id">Estado*</label>
+        <select id="estado_id" name="estado_id" required>
+          {% for estado in estados %}
+            <option value="{{ estado.id_estado }}" {% if usuario.estado.id_estado == estado.id_estado %}selected{% endif %}>{{ estado.estado }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Campos adicionales -->
+    <div class="form-group">
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" name="direccion" value="{{ usuario.direccion }}">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Teléfono</label>
+      <input type="tel" id="telefono" name="telefono" value="{{ usuario.telefono }}">
+    </div>
+
+    <div class="form-group">
+      <label for="fecha_nacimiento">Fecha Nacimiento</label>
+      <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" 
+             value="{{ usuario.fecha_nacimiento.strftime('%Y-%m-%d') if usuario.fecha_nacimiento else '' }}">
+    </div>
+
+    <div class="form-group">
+      <label for="foto">Foto de Perfil</label>
+      <input type="file" id="foto" name="foto" accept="image/*">
+      {% if usuario.foto and usuario.foto != 'N/A' %}
+        <div class="current-photo">
+          <span>Foto actual:</span>
+          <img src="{{ url_for('static', filename='uploads/' + usuario.foto) }}" alt="Foto actual" style="max-width: 100px;">
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button type="submit" class="quick-button">💾 Guardar Cambios</button>
+      <button href="{{ url_for('gestion_usuarios') }}" class="quick-button">❌ Cancelar</button>
+    </div>
+
+    <small class="form-note">* Campos obligatorios</small>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Noticias Corporativas{% endblock %}
+
+{% block bienvenida %}
+  <h1>Noticias Corporativas</h1>
+{% endblock %}
+
+{% block contenido %}
+  <div class="noticias-wrapper">
+    <div class="create-news-button">
+      <button class="quick-button" onclick="window.location.href='{{ url_for('crear_noticia') }}'">✒️ Crear noticia</button>
+    </div>
+    <section class="card full-span" style="width: 1000px;">
+      {% if noticias %}
+        {% for noticia in noticias %}
+          <div class="noticia">
+            <strong>{{ noticia.titulo }}</strong>
+            <p>{{ noticia.contexto }}</p>
+            <small>
+              📅 
+              {% if noticia.fecha_noticia %}
+                {{ noticia.fecha_noticia.strftime('%d de %B, %Y') }}
+              {% else %}
+                Sin fecha
+              {% endif %}
+              — ✍ 
+              {% if noticia.autor %}
+                {{ noticia.autor.nombres_usuario }} {{ noticia.autor.apellidos_usuario }}
+              {% else %}
+                Anónimo
+              {% endif %}
+              {% if current_user.is_authenticated and (current_user == noticia.autor or current_user.rol.rol == 'Administrador') %}
+                <span class="noticia-acciones">
+                  <a href="{{ url_for('modificar_noticia', noticia_id=noticia.id_noticias) }}" class="btn-editar">✏️ Modificar</a>
+                  <form id="deleteForm{{ noticia.id_noticias }}" action="{{ url_for('eliminar_noticia', noticia_id=noticia.id_noticias) }}" method="POST" style="display:inline;">
+					  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <a href="#" class="btn-eliminar" onclick="if(confirm('¿Estás seguro de eliminar esta noticia?')) { document.getElementById('deleteForm{{ noticia.id_noticias }}').submit(); }">🗑️ Eliminar</a>
+                  </form>
+                </span>
+              {% endif %}
+              {% if noticia.imagen %}
+                <img src="{{ url_for('static', filename='uploads/' ~ noticia.imagen) }}" alt="Imagen de la noticia" style="max-width:100%; margin-top:10px;">
+              {% endif %}
+            </small>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No hay noticias disponibles.</p>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}

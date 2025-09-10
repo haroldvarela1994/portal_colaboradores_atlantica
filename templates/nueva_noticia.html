@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Crear Nueva Noticia{% endblock %}
+
+{% block bienvenida %}
+  <h1>Crear Nueva Noticia</h1>
+{% endblock %}
+
+{% block contenido %}
+  <section class="card full-span">
+    <form class="form-noticia" action="{{ url_for('crear_noticia') }}" method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="titulo">Título</label>
+        <input type="text" id="titulo" name="titulo" required>
+      </div>
+      <div class="form-group">
+        <label for="contexto">Contenido</label>
+        <textarea id="contexto" name="contexto" rows="6" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="imagen">Adjuntar imagen</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*">
+      </div>
+      <button type="submit" class="quick-button">📝 Publicar</button>
+    </form>
+  </section>
+{% endblock %}

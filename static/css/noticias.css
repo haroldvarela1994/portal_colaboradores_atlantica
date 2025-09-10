@@ -1,0 +1,92 @@
+/* Contenedor principal */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.noticias-wrapper {
+    display: block !important;
+    width: 100%;
+    max-width: 100%;
+    display: block !important;
+    grid-template-columns: none !important;
+    grid-gap: 0 !important;
+    padding: 0 0 40px 100px;
+}
+
+/* Botón crear noticia */
+.create-news-button {
+  margin-bottom: 24px;
+  display: block;
+}
+
+/* Sección de noticias */
+.card.full-span {
+  display: block;
+  margin-top: 0;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
+}
+
+/* Estilos adicionales */
+.noticia {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+
+.noticia strong {
+  font-size: 18px;
+  color: #004d40;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.noticia p {
+  font-size: 15px;
+  color: #333;
+  margin: 8px 0;
+}
+
+.noticia small {
+  font-size: 12px;
+  color: #666;
+  display: block;
+}
+
+.imagen-noticia {
+  max-width: 100%;
+  margin: 10px 0;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* Botón */
+.quick-button {
+  background: linear-gradient(to right, #26a69a, #0288d1);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.quick-button:hover {
+  background: linear-gradient(to right, #1e8e82, #0277bd);
+}
