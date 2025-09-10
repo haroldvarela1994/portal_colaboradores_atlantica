@@ -55,7 +55,7 @@ def cargar_usuario(user_id):
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    
+
     if request.method == 'POST':
         email = request.form.get('email', '').strip()
         clave = request.form.get('clave', '').strip()
@@ -66,19 +66,19 @@ def login():
 
         try:
             user_db = Usuarios.get(Usuarios.email == email)
-            
+
             if check_password_hash(user_db.clave, clave):
                 login_user(user_db)
                 flash('¡Inicio de sesión exitoso!', 'success')
-                next_page = request.args.get('next')
-                return redirect(next_page or url_for('index'))
+                return redirect(url_for('index'))
             else:
                 flash('Credenciales incorrectas', 'error')
         except DoesNotExist:
             flash('Usuario no encontrado', 'error')
         except Exception as e:
             flash(f'Error al iniciar sesión: {str(e)}', 'error')
-            
+
+    print('DEBUG: Mostrando login.html')
     return render_template('login.html')
 
 @app.route('/index')
@@ -91,18 +91,15 @@ def index():
 @login_required
 @rol_requerido('Administrador', 'Gerente General')
 def gestion_usuarios():
-    # Obtener parámetros de filtrado
     estado_filter = request.args.get('estado', '')
     rol_filter = request.args.get('rol', '')
     search_term = request.args.get('search', '')
     
-    # Consulta base
     query = (Usuarios
              .select(Usuarios, Roles.rol, Estado.estado)
              .join(Roles, on=(Usuarios.rol == Roles.id_rol))
              .join(Estado, on=(Usuarios.estado == Estado.id_estado)))
     
-    # Aplicar filtros
     if estado_filter:
         query = query.where(Estado.estado == estado_filter)
     
@@ -335,7 +332,8 @@ def crear_noticia():
 def eliminar_noticia(noticia_id):
     try:
         noticia = Noticias.get(Noticias.id_noticias == noticia_id)
-        if noticia.autor != current_user:
+        # Se ha corregido la lógica para que el administrador pueda eliminar noticias de otros usuarios
+        if noticia.autor != current_user and current_user.rol.rol != 'Administrador':
             flash("No tienes permiso para eliminar esta noticia.", "error")
             return redirect(url_for('ver_noticias'))
         

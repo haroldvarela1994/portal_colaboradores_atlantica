@@ -224,26 +224,68 @@ def inicializar_estados():
         {'estado': 'Inactivo'},
     ]
 
+# ...existing code...
+
+# Lógica de creación/actualización del usuario administrador SIEMPRE después de crear/verificar las tablas
+try:
+    db.connect()
+    print("¡Conexión a la base de datos MySQL exitosa con PeeWee!")
+    db.create_tables([Estado, Roles, Usuarios, Noticias, Tipo_Faltas, Faltas, Disciplinarios, Descargos], safe=True)
+    print("Tablas verificadas/creadas en la base de datos.")
+except Exception as e:
+    print(f"Ocurrió un error al crear las tablas: {e}")
+
+try:
+    # Comprobamos si el rol 'Administrador' existe, sino lo creamos
+    rol_admin = Roles.get(Roles.rol == 'Administrador')
+    print("Rol Administrador encontrado.")
+except DoesNotExist:
     try:
-        with db.atomic():
-            # Primero obtenemos todos los estados existentes
-            estados_existentes = {e.estado: e for e in Estado.select()}
-
-            for estado_info in estados_data:
-                if estado_info['estado'] in estados_existentes:
-                    # Actualizar registro existente
-                    Estado.update(**estado_info)\
-                        .where(Estado.estado == estado_info['estado'])\
-                        .execute()
-                else:
-                    # Crear nuevo registro solo si no existe
-                    Estado.create(**estado_info)
-
-        print("✅ Tabla de estados actualizada completamente")
-
+        rol_admin = Roles.create(rol='Administrador', descripcion='Rol con todos los privilegios')
+        print("Rol Administrador creado.")
     except Exception as e:
-        print(f"❌ Error crítico: {str(e)}")
-        raise
+        print(f"Error al crear el rol Administrador: {e}")
 
-inicializar_roles()
-inicializar_estados()
+try:
+    # Comprobamos si el estado 'Activo' existe, sino lo creamos
+    estado_activo = Estado.get(Estado.estado == 'Activo')
+    print("Estado Activo encontrado.")
+except DoesNotExist:
+    try:
+        estado_activo = Estado.create(estado='Activo')
+        print("Estado Activo creado.")
+    except Exception as e:
+        print(f"Error al crear el estado Activo: {e}")
+
+try:
+    # Buscamos si el administrador ya existe
+    admin_check = Usuarios.get(Usuarios.email == 'haroldvarela1@gmail.com')
+    print(f"Usuario administrador encontrado: {admin_check}")  # Debugging statement
+    if not admin_check.clave.startswith('$2b$'):  # Verificamos si la contraseña no está hasheada
+        print("Actualizando la contraseña del administrador")  # Debugging statement
+        admin_check.clave = generate_password_hash('Rossiya1991')
+        admin_check.save()
+        print("Contraseña del administrador actualizada.")
+except DoesNotExist:
+    print("El usuario administrador no existe, procediendo a crearlo...")  # Debugging statement
+    try:
+        # Si no existe el administrador, lo creamos
+        print("Creando el usuario administrador...")  # Debugging statement
+        Usuarios.create(
+            numero_id='0000000000',
+            email='haroldvarela1@gmail.com',
+            clave=generate_password_hash('Rossiya1991'),
+            nombres_usuario='Administrador',
+            apellidos_usuario='Atlántica',
+            fecha_nacimiento=datetime.datetime(2010, 1, 1),
+            direccion='N/A',
+            telefono='N/A',
+            rol=rol_admin,
+            estado=estado_activo,
+            foto='N/A'
+        )
+        print("Administrador creado correctamente.")
+    except Exception as e:
+        print(f"Error al crear el administrador: {e}")
+except Exception as e:
+    print(f"Error al buscar el usuario: {e}")
